@@ -1,38 +1,631 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  background-color: #f5f5f5;
+  color: #333;
+}
+
 .App {
+  min-height: 100vh;
+}
+
+/* Header Styles */
+.app-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.app-header h1 {
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.app-header nav {
+  display: flex;
+  gap: 1rem;
+}
+
+.app-header nav button {
+  background: rgba(255,255,255,0.2);
+  border: none;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.app-header nav button:hover,
+.app-header nav button.active {
+  background: rgba(255,255,255,0.3);
+}
+
+/* Main Content */
+.app-main {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 2rem;
+}
+
+/* Auth Styles */
+.auth-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.auth-container {
+  background: white;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  width: 100%;
+  max-width: 400px;
+}
+
+.auth-container h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.auth-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.auth-container input {
+  padding: 0.75rem;
+  border: 2px solid #ddd;
+  border-radius: 5px;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+.auth-container input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.auth-container button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: opacity 0.3s;
+}
+
+.auth-container button:hover {
+  opacity: 0.9;
+}
+
+.auth-container button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: #667eea;
+  cursor: pointer;
+  text-decoration: underline;
+  margin-left: 0.5rem;
+}
+
+/* Posts Styles */
+.posts-section {
+  background: white;
+  border-radius: 10px;
+  padding: 2rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.posts-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #eee;
+}
+
+.create-btn {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.3s;
+}
+
+.create-btn:hover {
+  background: #218838;
+}
+
+/* Post Form Styles */
+.post-form {
+  background: #f8f9fa;
+  padding: 2rem;
+  border-radius: 10px;
+  margin-bottom: 2rem;
+}
+
+.post-form h3 {
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.post-form form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.post-form input,
+.post-form textarea,
+.post-form select {
+  padding: 0.75rem;
+  border: 2px solid #ddd;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+.post-form textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.image-section {
+  border: 2px dashed #ddd;
+  padding: 1.5rem;
+  border-radius: 10px;
+  background: white;
+}
+
+.image-section h4 {
+  margin-bottom: 1rem;
+  color: #555;
+}
+
+.image-upload,
+.image-generate {
+  margin-bottom: 1rem;
+}
+
+.image-upload label,
+.image-generate label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.image-generate {
+  display: flex;
+  gap: 1rem;
+  align-items: end;
+}
+
+.image-generate input {
+  flex: 1;
+}
+
+.generated-image {
+  margin-top: 1rem;
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.platforms-section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 10px;
+  border: 2px solid #eee;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.platforms-section h4 {
+  margin-bottom: 1rem;
+  color: #555;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.platform-checkbox {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+}
+
+.platform-checkbox input {
+  margin: 0;
+}
+
+.schedule-section label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.form-actions button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.3s;
+}
+
+.form-actions button[type="submit"] {
+  background: #007bff;
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.form-actions button[type="submit"]:hover {
+  background: #0056b3;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+.form-actions button[type="button"] {
+  background: #6c757d;
+  color: white;
+}
+
+.form-actions button[type="button"]:hover {
+  background: #545b62;
+}
+
+/* Posts List Styles */
+.posts-list h3 {
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.post-card {
+  background: white;
+  border: 2px solid #eee;
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  transition: box-shadow 0.3s;
+}
+
+.post-card:hover {
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.post-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.post-header h4 {
+  color: #333;
+  margin: 0;
+}
+
+.status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.status.draft {
+  background: #ffc107;
+  color: #856404;
+}
+
+.status.scheduled {
+  background: #17a2b8;
+  color: white;
+}
+
+.status.posted {
+  background: #28a745;
+  color: white;
+}
+
+.status.failed {
+  background: #dc3545;
+  color: white;
+}
+
+.post-image {
+  max-width: 200px;
+  max-height: 200px;
+  border-radius: 5px;
+  margin: 1rem 0;
+}
+
+.post-platforms {
+  margin: 1rem 0;
+}
+
+.platform-tag {
+  background: #e9ecef;
+  padding: 0.25rem 0.5rem;
+  border-radius: 3px;
+  font-size: 0.8rem;
+  margin-right: 0.5rem;
+  display: inline-block;
+}
+
+.post-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.post-actions button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.3s;
+}
+
+.post-actions button:first-child {
+  background: #007bff;
+  color: white;
+}
+
+.post-actions button:first-child:hover {
+  background: #0056b3;
+}
+
+.post-actions button:nth-child(2) {
+  background: #28a745;
+  color: white;
+}
+
+.post-actions button:nth-child(2):hover {
+  background: #218838;
+}
+
+.delete-btn {
+  background: #dc3545 !important;
+  color: white !important;
+}
+
+.delete-btn:hover {
+  background: #c82333 !important;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: white;
+  padding: 2rem;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.modal h3 {
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.modal input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #ddd;
+  border-radius: 5px;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+.modal-actions button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.modal-actions button:first-child {
+  background: #007bff;
+  color: white;
+}
+
+.modal-actions button:last-child {
+  background: #6c757d;
+  color: white;
+}
+
+/* Social Accounts Styles */
+.social-accounts {
+  background: white;
+  border-radius: 10px;
+  padding: 2rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.accounts-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #eee;
+}
+
+.account-form {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 10px;
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.account-form select,
+.account-form input {
+  padding: 0.75rem;
+  border: 2px solid #ddd;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.account-form button {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 0.75rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.accounts-list {
+  margin-bottom: 2rem;
+}
+
+.account-card {
+  background: #f8f9fa;
+  border: 2px solid #eee;
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.account-info h4 {
+  margin-bottom: 0.5rem;
+  color: #333;
+  text-transform: capitalize;
+}
+
+.account-info p {
+  color: #666;
+  margin-bottom: 0.5rem;
+}
+
+.status.active {
+  background: #28a745;
+  color: white;
+}
+
+.status.inactive {
+  background: #dc3545;
+  color: white;
+}
+
+.platform-info {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 10px;
+  border-left: 4px solid #007bff;
+}
+
+.platform-info h4 {
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.info-section {
+  margin-bottom: 1.5rem;
+}
+
+.info-section h5 {
+  color: #007bff;
+  margin-bottom: 0.5rem;
+}
+
+.info-section p {
+  color: #666;
+  margin-bottom: 0.25rem;
+  font-size: 0.9rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .app-header {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
   }
-  to {
-    transform: rotate(360deg);
+  
+  .app-main {
+    padding: 0 1rem;
+  }
+  
+  .posts-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+  
+  .post-actions {
+    flex-wrap: wrap;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .accounts-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+  
+  .account-card {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+  
+  .image-generate {
+    flex-direction: column;
+    align-items: stretch;
   }
 }
