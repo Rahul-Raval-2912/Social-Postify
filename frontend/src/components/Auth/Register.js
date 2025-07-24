@@ -37,46 +37,52 @@ const Register = ({ switchToLogin }) => {
   };
 
   return (
-    <div className="auth-container">
-      <h2>Register for Social Postify</h2>
+    <>
       <form onSubmit={handleSubmit}>
         <input
           type="text"
-          placeholder="Username"
+          placeholder="👤 Username"
           value={formData.username}
           onChange={(e) => setFormData({...formData, username: e.target.value})}
           required
         />
         <input
           type="email"
-          placeholder="Email"
+          placeholder="📧 Email Address"
           value={formData.email}
           onChange={(e) => setFormData({...formData, email: e.target.value})}
           required
         />
         <input
           type="password"
-          placeholder="Password"
+          placeholder="🔒 Password"
           value={formData.password}
           onChange={(e) => setFormData({...formData, password: e.target.value})}
           required
         />
         <input
           type="password"
-          placeholder="Confirm Password"
+          placeholder="🔒 Confirm Password"
           value={formData.confirmPassword}
           onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
           required
         />
         <button type="submit" disabled={loading}>
-          {loading ? 'Registering...' : 'Register'}
+          {loading ? (
+            <>
+              <span className="loading-spinner">🔄</span>
+              Creating account...
+            </>
+          ) : (
+            '✨ Create Account'
+          )}
         </button>
       </form>
-      <p>
+      <p style={{textAlign: 'center', marginTop: '1.5rem', color: '#666'}}>
         Already have an account? 
-        <button onClick={switchToLogin} className="link-btn">Login</button>
+        <button onClick={switchToLogin} className="link-btn">Sign in here</button>
       </p>
-    </div>
+    </>
   );
 };
 

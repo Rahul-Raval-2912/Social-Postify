@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { postsAPI } from '../../services/api';
 import { toast } from 'react-toastify';
 
-const PostsList = ({ onEdit, refreshTrigger }) => {
+const PostsList = ({ refreshTrigger, setCurrentPage }) => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [publishingPost, setPublishingPost] = useState(null);
@@ -78,94 +78,175 @@ const PostsList = ({ onEdit, refreshTrigger }) => {
   if (loading) return <div>Loading posts...</div>;
 
   return (
-    <div className="posts-list">
-      <h3>Your Posts</h3>
+    <div className="posts-list-page">
+      <div className="page-header">
+        <button 
+          className="back-btn"
+          onClick={() => setCurrentPage('dashboard')}
+        >
+          ← Back
+        </button>
+        <div className="page-title">
+          <h1>📝 My Posts</h1>
+          <p>Manage all your social media content</p>
+        </div>
+        <button 
+          className="create-post-btn"
+          onClick={() => setCurrentPage('create-post')}
+        >
+          ✍️ Create New Post
+        </button>
+      </div>
+
       {posts.length === 0 ? (
-        <p>No posts yet. Create your first post!</p>
+        <div className="empty-state">
+          <div className="empty-icon">📝</div>
+          <h3>No posts yet</h3>
+          <p>Create your first post to get started!</p>
+          <button 
+            className="create-first-post-btn"
+            onClick={() => setCurrentPage('create-post')}
+          >
+            ✍️ Create First Post
+          </button>
+        </div>
       ) : (
-        posts.map(post => (
-          <div key={post.id} className="post-card">
-            <div className="post-header">
-              <h4>{post.title}</h4>
-              <span className={`status ${post.status}`}>{post.status}</span>
-            </div>
-            
-            <p>{post.content}</p>
-            
-            {post.image && (
-              <img 
-                src={post.image} 
-                alt="Post" 
-                className="post-image"
-              />
-            )}
-            
-            <div className="post-platforms">
-              <strong>Platforms:</strong>
-              {post.platforms.map(platform => (
-                <span key={platform.id} className="platform-tag">
-                  {platform.platform}
+        <div className="posts-grid">
+          {posts.map(post => (
+            <div key={post.id} className="modern-post-card">
+              <div className="post-card-header">
+                <h4>{post.title}</h4>
+                <span className={`modern-status-badge ${post.status}`}>
+                  {post.status === 'posted' && '✅'}
+                  {post.status === 'scheduled' && '⏰'}
+                  {post.status === 'draft' && '📝'}
+                  {post.status === 'failed' && '❌'}
+                  {post.status}
                 </span>
-              ))}
-            </div>
-            
-            {post.scheduled_time && (
-              <p><strong>Scheduled:</strong> {new Date(post.scheduled_time).toLocaleString()}</p>
-            )}
-            
-            <div className="post-actions">
-              <button onClick={() => onEdit(post)}>Edit</button>
+              </div>
               
-              {post.status === 'draft' && (
+              <div className="post-card-content">
+                <p>{post.content.substring(0, 150)}{post.content.length > 150 ? '...' : ''}</p>
+                
+                {post.image && (
+                  <div className="post-card-image">
+                    <img src={post.image} alt="Post" />
+                  </div>
+                )}
+                
+                <div className="post-card-platforms">
+                  {post.platforms.map(platform => (
+                    <span key={platform.id} className="modern-platform-tag">
+                      {platform.platform === 'telegram' && '📱'}
+                      {platform.platform === 'instagram' && '📷'}
+                      {platform.platform === 'facebook' && '👥'}
+                      {platform.platform === 'whatsapp' && '💬'}
+                      {platform.platform}
+                    </span>
+                  ))}
+                </div>
+                
+                <div className="post-card-meta">
+                  <span className="post-date">
+                    📅 {new Date(post.created_at).toLocaleDateString()}
+                  </span>
+                  {post.scheduled_time && (
+                    <span className="scheduled-time">
+                      ⏰ {new Date(post.scheduled_time).toLocaleString()}
+                    </span>
+                  )}
+                </div>
+              </div>
+              
+              <div className="post-card-actions">
+                {post.status === 'draft' && (
+                  <button 
+                    className="publish-now-btn"
+                    onClick={() => handlePublish(post)}
+                    disabled={publishingPost === post.id}
+                  >
+                    {publishingPost === post.id ? (
+                      <>
+                        <span className="loading-spinner">🔄</span>
+                        Publishing...
+                      </>
+                    ) : (
+                      '🚀 Publish Now'
+                    )}
+                  </button>
+                )}
+                
                 <button 
-                  onClick={() => handlePublish(post)}
-                  disabled={publishingPost === post.id}
+                  className="delete-post-btn"
+                  onClick={() => deletePost(post.id)}
                 >
-                  {publishingPost === post.id ? 'Publishing...' : 'Publish Now'}
+                  🗑️ Delete
                 </button>
-              )}
-              
-              <button 
-                onClick={() => deletePost(post.id)}
-                className="delete-btn"
-              >
-                Delete
-              </button>
+              </div>
             </div>
-          </div>
-        ))
+          ))}
+        </div>
       )}
 
       {/* Instagram Credentials Modal */}
       {showCredentialsModal && (
         <div className="modal-overlay">
-          <div className="modal">
-            <h3>Instagram Login Required</h3>
-            <p>Your Instagram credentials are needed for posting. They will not be stored.</p>
+          <div className="modern-modal">
+            <div className="modal-header">
+              <h3>📷 Instagram Login Required</h3>
+              <button 
+                className="modal-close"
+                onClick={() => setShowCredentialsModal(false)}
+              >
+                ✕
+              </button>
+            </div>
             
-            <input
-              type="text"
-              placeholder="Instagram Username"
-              value={instagramCredentials.username}
-              onChange={(e) => setInstagramCredentials({
-                ...instagramCredentials,
-                username: e.target.value
-              })}
-            />
-            
-            <input
-              type="password"
-              placeholder="Instagram Password"
-              value={instagramCredentials.password}
-              onChange={(e) => setInstagramCredentials({
-                ...instagramCredentials,
-                password: e.target.value
-              })}
-            />
+            <div className="modal-content">
+              <div className="security-notice">
+                <div className="security-icon">🔒</div>
+                <p>Your Instagram credentials are needed for posting. <strong>They will not be stored</strong> for your security.</p>
+              </div>
+              
+              <div className="credentials-form">
+                <input
+                  type="text"
+                  placeholder="👤 Instagram Username"
+                  value={instagramCredentials.username}
+                  onChange={(e) => setInstagramCredentials({
+                    ...instagramCredentials,
+                    username: e.target.value
+                  })}
+                  className="form-input"
+                />
+                
+                <input
+                  type="password"
+                  placeholder="🔒 Instagram Password"
+                  value={instagramCredentials.password}
+                  onChange={(e) => setInstagramCredentials({
+                    ...instagramCredentials,
+                    password: e.target.value
+                  })}
+                  className="form-input"
+                />
+              </div>
+            </div>
             
             <div className="modal-actions">
-              <button onClick={handleCredentialsSubmit}>Publish</button>
-              <button onClick={() => setShowCredentialsModal(false)}>Cancel</button>
+              <button 
+                className="modal-cancel-btn"
+                onClick={() => setShowCredentialsModal(false)}
+              >
+                Cancel
+              </button>
+              <button 
+                className="modal-publish-btn"
+                onClick={handleCredentialsSubmit}
+                disabled={!instagramCredentials.username || !instagramCredentials.password}
+              >
+                🚀 Publish to Instagram
+              </button>
             </div>
           </div>
         </div>
