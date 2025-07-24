@@ -21,10 +21,10 @@ class PostViewSet(viewsets.ModelViewSet):
     parser_classes = (MultiPartParser, FormParser)
     
     def get_queryset(self):
-        return Post.objects.filter(user_id=self.request.user.id if self.request.user.is_authenticated else None)
+        return Post.objects.filter(user=self.request.user if self.request.user.is_authenticated else None)
     
     def perform_create(self, serializer):
-        serializer.save(user_id=self.request.user.id)
+        serializer.save(user=self.request.user)
     
     @action(detail=False, methods=['post'])
     def generate_image(self, request):
@@ -77,10 +77,10 @@ class SocialAccountViewSet(viewsets.ModelViewSet):
     serializer_class = SocialAccountSerializer
     
     def get_queryset(self):
-        return SocialAccount.objects.filter(user_id=self.request.user.id if self.request.user.is_authenticated else None)
+        return SocialAccount.objects.filter(user=self.request.user if self.request.user.is_authenticated else None)
     
     def perform_create(self, serializer):
-        serializer.save(user_id=self.request.user.id)
+        serializer.save(user=self.request.user)
 
 @api_view(['POST'])
 @csrf_exempt

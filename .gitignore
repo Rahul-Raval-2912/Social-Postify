@@ -22,6 +22,10 @@ backend/server/db.sqlite3
 __pycache__/
 *.log
 
+# MongoDB
+data/
+mongodb/
+
 # IDE
 .vscode/
 .idea/

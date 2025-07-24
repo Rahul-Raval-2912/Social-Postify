@@ -78,11 +78,8 @@ WSGI_APPLICATION = 'server.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'djongo',
-        'NAME': 'social_postify',
-        'CLIENT': {
-            'host': 'mongodb://localhost:27017',
-        }
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -139,10 +136,12 @@ import os
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# MongoDB Configuration
-MONGO_DB_NAME = 'social_postify'
-MONGO_HOST = 'localhost'
-MONGO_PORT = 27017
+# MongoDB Configuration (commented out for now)
+# try:
+#     import mongoengine
+#     mongoengine.connect('social_postify', host='mongodb://localhost:27017/social_postify')
+# except ImportError:
+#     pass  # MongoDB not available
 
 # REST Framework
 REST_FRAMEWORK = {

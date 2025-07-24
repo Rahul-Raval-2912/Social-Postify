@@ -118,28 +118,24 @@ class PostingService:
     async def publish_post(post_id, credentials=None):
         """Publish post to all selected platforms"""
         try:
-            from bson import ObjectId
-            post = Post.objects.get(_id=ObjectId(post_id))
+            post = Post.objects.get(id=post_id)
             results = []
             
-            if post.platform_ids:
-                accounts = SocialAccount.objects.filter(_id__in=[ObjectId(pid) for pid in post.platform_ids])
+            for account in post.platforms.all():
+                success, message = await PostingService.post_to_platform(post, account, credentials)
                 
-                for account in accounts:
-                    success, message = await PostingService.post_to_platform(post, account, credentials)
-                    
-                    PostResult.objects.create(
-                        post_id=str(post._id),
-                        platform_id=str(account._id),
-                        success=success,
-                        error_message=message if not success else ""
-                    )
-                    
-                    results.append({
-                        'platform': account.platform,
-                        'success': success,
-                        'message': message
-                    })
+                PostResult.objects.create(
+                    post=post,
+                    platform=account,
+                    success=success,
+                    error_message=message if not success else ""
+                )
+                
+                results.append({
+                    'platform': account.platform,
+                    'success': success,
+                    'message': message
+                })
             
             # Update post status
             all_success = all(r['success'] for r in results) if results else False
