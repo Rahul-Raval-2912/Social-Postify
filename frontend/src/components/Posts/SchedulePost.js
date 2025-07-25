@@ -154,64 +154,64 @@ const SchedulePost = ({ onPostCreated, setCurrentPage }) => {
   };
 
   return (
-    <div className=\"schedule-post-page\">
-      <div className=\"page-header\">
+    <div className="schedule-post-page">
+      <div className="page-header">
         <button 
-          className=\"back-btn\"
+          className="back-btn"
           onClick={() => setCurrentPage('dashboard')}
         >
           ← Back
         </button>
-        <div className=\"page-title\">
+        <div className="page-title">
           <h1>⏰ Schedule Post</h1>
           <p>Plan your content for the perfect timing</p>
         </div>
       </div>
 
-      <div className=\"schedule-container\">
-        <form onSubmit={handleSubmit} className=\"schedule-form\">
-          <div className=\"form-section\">
-            <div className=\"section-header\">
+      <div className="schedule-container">
+        <form onSubmit={handleSubmit} className="schedule-form">
+          <div className="form-section">
+            <div className="section-header">
               <h3>📝 Post Content</h3>
             </div>
             
-            <div className=\"form-group\">
+            <div className="form-group">
               <label>Post Title *</label>
               <input
-                type=\"text\"
-                placeholder=\"Enter an engaging title...\"
+                type="text"
+                placeholder="Enter an engaging title..."
                 value={formData.title}
                 onChange={(e) => setFormData({...formData, title: e.target.value})}
-                className=\"form-input\"
+                className="form-input"
                 required
               />
             </div>
 
-            <div className=\"form-group\">
+            <div className="form-group">
               <label>Content *</label>
               <textarea
-                placeholder=\"What's on your mind? Use # for hashtags...\"
+                placeholder="What's on your mind? Use # for hashtags..."
                 value={formData.content}
                 onChange={(e) => setFormData({...formData, content: e.target.value})}
-                className=\"form-textarea\"
-                rows=\"6\"
+                className="form-textarea"
+                rows="6"
                 required
               />
             </div>
           </div>
 
-          <div className=\"form-section\">
-            <div className=\"section-header\">
+          <div className="form-section">
+            <div className="section-header">
               <h3>🖼️ Add Image</h3>
             </div>
             
-            <div className=\"image-upload-area\">
+            <div className="image-upload-area">
               {imagePreview ? (
-                <div className=\"image-preview\">
-                  <img src={imagePreview} alt=\"Preview\" />
+                <div className="image-preview">
+                  <img src={imagePreview} alt="Preview" />
                   <button 
-                    type=\"button\"
-                    className=\"remove-image-btn\"
+                    type="button"
+                    className="remove-image-btn"
                     onClick={() => {
                       setImagePreview(null);
                       setFormData({...formData, image: null});
@@ -221,15 +221,15 @@ const SchedulePost = ({ onPostCreated, setCurrentPage }) => {
                   </button>
                 </div>
               ) : (
-                <label className=\"upload-label\">
+                <label className="upload-label">
                   <input
-                    type=\"file\"
-                    accept=\"image/*\"
+                    type="file"
+                    accept="image/*"
                     onChange={handleImageChange}
-                    className=\"file-input\"
+                    className="file-input"
                   />
-                  <div className=\"upload-content\">
-                    <div className=\"upload-icon\">📸</div>
+                  <div className="upload-content">
+                    <div className="upload-icon">📸</div>
                     <p>Click to upload image</p>
                   </div>
                 </label>
@@ -237,18 +237,18 @@ const SchedulePost = ({ onPostCreated, setCurrentPage }) => {
             </div>
             
             <button 
-              type=\"button\"
-              className=\"ai-generate-btn\"
+              type="button"
+              className="ai-generate-btn"
               onClick={() => setCurrentPage('image-generator')}
             >
               🎨 Generate with AI
             </button>
           </div>
 
-          <div className=\"form-section\">
-            <div className=\"section-header\">
+          <div className="form-section">
+            <div className="section-header">
               <h3>⏰ Schedule Time</h3>
-              <span className=\"schedule-info\">
+              <span className="schedule-info">
                 {formData.scheduled_time > new Date() 
                   ? `Will post ${getTimeFromNow(formData.scheduled_time)}`
                   : 'Please select a future time'
@@ -256,76 +256,76 @@ const SchedulePost = ({ onPostCreated, setCurrentPage }) => {
               </span>
             </div>
             
-            <div className=\"quick-schedule\">
+            <div className="quick-schedule">
               <h4>Quick Options:</h4>
-              <div className=\"quick-options\">
+              <div className="quick-options">
                 {quickScheduleOptions.map((option, index) => (
                   <button
                     key={index}
-                    type=\"button\"
-                    className=\"quick-option\"
+                    type="button"
+                    className="quick-option"
                     onClick={() => setQuickSchedule(option)}
                   >
-                    <span className=\"option-icon\">{option.icon}</span>
+                    <span className="option-icon">{option.icon}</span>
                     {option.label}
                   </button>
                 ))}
               </div>
             </div>
             
-            <div className=\"custom-schedule\">
+            <div className="custom-schedule">
               <h4>Custom Date & Time:</h4>
               <DatePicker
                 selected={formData.scheduled_time}
                 onChange={(date) => setFormData({...formData, scheduled_time: date})}
                 showTimeSelect
-                timeFormat=\"HH:mm\"
+                timeFormat="HH:mm"
                 timeIntervals={15}
-                dateFormat=\"MMMM d, yyyy h:mm aa\"
+                dateFormat="MMMM d, yyyy h:mm aa"
                 minDate={new Date()}
-                className=\"datetime-picker\"
-                placeholderText=\"Select date and time\"
+                className="datetime-picker"
+                placeholderText="Select date and time"
               />
             </div>
           </div>
 
-          <div className=\"form-section\">
-            <div className=\"section-header\">
+          <div className="form-section">
+            <div className="section-header">
               <h3>🎯 Select Platforms</h3>
-              <span className=\"selected-count\">
+              <span className="selected-count">
                 {formData.platform_ids.length} selected
               </span>
             </div>
             
             {accounts.length === 0 ? (
-              <div className=\"no-accounts\">
-                <div className=\"no-accounts-icon\">🔗</div>
+              <div className="no-accounts">
+                <div className="no-accounts-icon">🔗</div>
                 <h4>No accounts connected</h4>
                 <p>Connect your social media accounts first</p>
                 <button 
-                  type=\"button\"
-                  className=\"connect-accounts-btn\"
+                  type="button"
+                  className="connect-accounts-btn"
                   onClick={() => setCurrentPage('accounts')}
                 >
                   Connect Accounts
                 </button>
               </div>
             ) : (
-              <div className=\"platforms-grid\">
+              <div className="platforms-grid">
                 {accounts.map(account => (
                   <div 
                     key={account.id}
                     className={`platform-card ${formData.platform_ids.includes(account.id) ? 'selected' : ''}`}
                     onClick={() => togglePlatform(account.id)}
                   >
-                    <div className=\"platform-icon\">
+                    <div className="platform-icon">
                       {getPlatformIcon(account.platform)}
                     </div>
-                    <div className=\"platform-info\">
+                    <div className="platform-info">
                       <h4>{account.platform}</h4>
                       <p>@{account.username}</p>
                     </div>
-                    <div className=\"platform-checkbox\">
+                    <div className="platform-checkbox">
                       {formData.platform_ids.includes(account.id) ? '✅' : '⭕'}
                     </div>
                   </div>
@@ -334,22 +334,22 @@ const SchedulePost = ({ onPostCreated, setCurrentPage }) => {
             )}
           </div>
 
-          <div className=\"form-actions\">
+          <div className="form-actions">
             <button 
-              type=\"button\"
-              className=\"cancel-btn\"
+              type="button"
+              className="cancel-btn"
               onClick={() => setCurrentPage('dashboard')}
             >
               Cancel
             </button>
             <button 
-              type=\"submit\"
-              className=\"schedule-btn\"
+              type="submit"
+              className="schedule-btn"
               disabled={loading || formData.platform_ids.length === 0 || formData.scheduled_time <= new Date()}
             >
               {loading ? (
                 <>
-                  <span className=\"loading-spinner\">🔄</span>
+                  <span className="loading-spinner">🔄</span>
                   Scheduling...
                 </>
               ) : (
@@ -361,14 +361,14 @@ const SchedulePost = ({ onPostCreated, setCurrentPage }) => {
           </div>
         </form>
 
-        <div className=\"schedule-preview\">
+        <div className="schedule-preview">
           <h3>📅 Schedule Preview</h3>
-          <div className=\"preview-card\">
-            <div className=\"schedule-info-card\">
-              <div className=\"schedule-icon\">⏰</div>
-              <div className=\"schedule-details\">
+          <div className="preview-card">
+            <div className="schedule-info-card">
+              <div className="schedule-icon">⏰</div>
+              <div className="schedule-details">
                 <h4>Scheduled for:</h4>
-                <p className=\"schedule-date\">
+                <p className="schedule-date">
                   {formData.scheduled_time.toLocaleDateString('en-US', {
                     weekday: 'long',
                     year: 'numeric',
@@ -376,13 +376,13 @@ const SchedulePost = ({ onPostCreated, setCurrentPage }) => {
                     day: 'numeric'
                   })}
                 </p>
-                <p className=\"schedule-time\">
+                <p className="schedule-time">
                   {formData.scheduled_time.toLocaleTimeString('en-US', {
                     hour: '2-digit',
                     minute: '2-digit'
                   })}
                 </p>
-                <p className=\"schedule-relative\">
+                <p className="schedule-relative">
                   {formData.scheduled_time > new Date() 
                     ? getTimeFromNow(formData.scheduled_time)
                     : 'Past time - please update'
@@ -391,16 +391,16 @@ const SchedulePost = ({ onPostCreated, setCurrentPage }) => {
               </div>
             </div>
             
-            <div className=\"platforms-preview\">
+            <div className="platforms-preview">
               <h4>Will post to:</h4>
-              <div className=\"selected-platforms\">
+              <div className="selected-platforms">
                 {formData.platform_ids.length === 0 ? (
-                  <p className=\"no-platforms\">No platforms selected</p>
+                  <p className="no-platforms">No platforms selected</p>
                 ) : (
                   accounts
                     .filter(acc => formData.platform_ids.includes(acc.id))
                     .map(acc => (
-                      <div key={acc.id} className=\"platform-preview\">
+                      <div key={acc.id} className="platform-preview">
                         <span>{getPlatformIcon(acc.platform)}</span>
                         <span>{acc.platform}</span>
                       </div>

@@ -73,8 +73,6 @@ function App() {
         return <SchedulePost onPostCreated={handlePostCreated} setCurrentPage={setCurrentPage} />;
       case 'posts':
         return <PostsList refreshTrigger={refreshTrigger} setCurrentPage={setCurrentPage} />;
-      case 'accounts':
-        return <SocialAccounts setCurrentPage={setCurrentPage} />;
       default:
         return <Dashboard setCurrentPage={setCurrentPage} />;
     }
@@ -131,13 +129,7 @@ function App() {
             My Posts
           </button>
           
-          <button 
-            className={`nav-item ${currentPage === 'accounts' ? 'active' : ''}`}
-            onClick={() => setCurrentPage('accounts')}
-          >
-            <span className="nav-icon">🔗</span>
-            Accounts
-          </button>
+
         </div>
         
         <div className="sidebar-footer">

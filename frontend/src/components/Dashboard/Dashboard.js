@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { postsAPI, accountsAPI } from '../../services/api';
+import { postsAPI } from '../../services/api';
 import { toast } from 'react-toastify';
 
 const Dashboard = ({ setCurrentPage }) => {
@@ -18,19 +18,14 @@ const Dashboard = ({ setCurrentPage }) => {
 
   const fetchDashboardData = async () => {
     try {
-      const [postsResponse, accountsResponse] = await Promise.all([
-        postsAPI.getAll(),
-        accountsAPI.getAll()
-      ]);
-
+      const postsResponse = await postsAPI.getAll();
       const posts = postsResponse.data;
-      const accounts = accountsResponse.data;
 
       setStats({
         totalPosts: posts.length,
         publishedPosts: posts.filter(p => p.status === 'posted').length,
         scheduledPosts: posts.filter(p => p.status === 'scheduled').length,
-        connectedAccounts: accounts.length
+        connectedAccounts: 1 // Telegram account
       });
 
       setRecentPosts(posts.slice(0, 5));
@@ -63,13 +58,7 @@ const Dashboard = ({ setCurrentPage }) => {
       color: '#2196F3',
       action: () => setCurrentPage('schedule-post')
     },
-    {
-      title: 'Manage Accounts',
-      description: 'Connect social platforms',
-      icon: '🔗',
-      color: '#9C27B0',
-      action: () => setCurrentPage('accounts')
-    }
+
   ];
 
   if (loading) {

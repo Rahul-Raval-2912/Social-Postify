@@ -46,20 +46,23 @@ class TelegramService:
         """Post to Telegram channel"""
         try:
             token = os.getenv("TELEGRAM_TOKEN")
-            chat_id = account.chat_id or os.getenv("CHAT_ID")
+            chat_id = os.getenv("CHAT_ID")
             
             if not token or not chat_id:
-                raise Exception("Telegram credentials not configured")
+                raise Exception("Telegram credentials not configured in environment")
             
             bot = Bot(token=token)
             
+            # Create post content with title
+            content = f"**{post.title}**\n\n{post.content}"
+            
             if post.image:
                 with open(post.image.path, "rb") as photo:
-                    await bot.send_photo(chat_id=chat_id, photo=photo, caption=post.content)
+                    await bot.send_photo(chat_id=chat_id, photo=photo, caption=content)
             else:
-                await bot.send_message(chat_id=chat_id, text=post.content)
+                await bot.send_message(chat_id=chat_id, text=content)
             
-            return True, "Posted successfully"
+            return True, "Posted to Telegram successfully"
         except Exception as e:
             return False, str(e)
 

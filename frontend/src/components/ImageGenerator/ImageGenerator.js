@@ -64,7 +64,6 @@ const ImageGenerator = ({ setCurrentPage }) => {
 
   const useImageForPost = () => {
     if (generatedImage) {
-      // Store the generated image in localStorage for use in create post
       localStorage.setItem('generatedImageForPost', JSON.stringify(generatedImage));
       setCurrentPage('create-post');
       toast.info('Image ready for your post! 📝');
@@ -79,41 +78,41 @@ const ImageGenerator = ({ setCurrentPage }) => {
   }, []);
 
   return (
-    <div className=\"image-generator-page\">
-      <div className=\"page-header\">
+    <div className="image-generator-page">
+      <div className="page-header">
         <button 
-          className=\"back-btn\"
+          className="back-btn"
           onClick={() => setCurrentPage('dashboard')}
         >
           ← Back
         </button>
-        <div className=\"page-title\">
+        <div className="page-title">
           <h1>🎨 AI Image Generator</h1>
           <p>Create stunning visuals with artificial intelligence</p>
         </div>
       </div>
 
-      <div className=\"generator-container\">
-        <div className=\"generator-section\">
-          <div className=\"prompt-section\">
+      <div className="generator-container">
+        <div className="generator-section">
+          <div className="prompt-section">
             <h3>✨ Describe Your Image</h3>
-            <div className=\"prompt-input-container\">
+            <div className="prompt-input-container">
               <textarea
-                placeholder=\"Describe the image you want to create... Be creative and detailed!\"
+                placeholder="Describe the image you want to create... Be creative and detailed!"
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
-                className=\"prompt-textarea\"
-                rows=\"4\"
+                className="prompt-textarea"
+                rows="4"
               />
-              <div className=\"prompt-actions\">
+              <div className="prompt-actions">
                 <button 
-                  className=\"generate-btn\"
+                  className="generate-btn"
                   onClick={generateImage}
                   disabled={loading || !prompt.trim()}
                 >
                   {loading ? (
                     <>
-                      <span className=\"loading-spinner\">🔄</span>
+                      <span className="loading-spinner">🔄</span>
                       Generating...
                     </>
                   ) : (
@@ -126,13 +125,13 @@ const ImageGenerator = ({ setCurrentPage }) => {
             </div>
           </div>
 
-          <div className=\"suggestions-section\">
+          <div className="suggestions-section">
             <h4>💡 Need inspiration? Try these:</h4>
-            <div className=\"suggestions-grid\">
+            <div className="suggestions-grid">
               {promptSuggestions.map((suggestion, index) => (
                 <button
                   key={index}
-                  className=\"suggestion-chip\"
+                  className="suggestion-chip"
                   onClick={() => setPrompt(suggestion)}
                 >
                   {suggestion}
@@ -142,41 +141,41 @@ const ImageGenerator = ({ setCurrentPage }) => {
           </div>
 
           {generatedImage && (
-            <div className=\"generated-result\">
+            <div className="generated-result">
               <h3>🖼️ Generated Image</h3>
-              <div className=\"result-container\">
-                <div className=\"generated-image\">
+              <div className="result-container">
+                <div className="generated-image">
                   <img 
                     src={`data:image/png;base64,${generatedImage.base64}`} 
-                    alt=\"Generated\" 
+                    alt="Generated" 
                   />
-                  <div className=\"image-overlay\">
-                    <div className=\"image-actions\">
+                  <div className="image-overlay">
+                    <div className="image-actions">
                       <button 
-                        className=\"action-btn save-btn\"
+                        className="action-btn save-btn"
                         onClick={saveImage}
-                        title=\"Save to Gallery\"
+                        title="Save to Gallery"
                       >
                         💾
                       </button>
                       <button 
-                        className=\"action-btn download-btn\"
+                        className="action-btn download-btn"
                         onClick={downloadImage}
-                        title=\"Download\"
+                        title="Download"
                       >
                         📥
                       </button>
                       <button 
-                        className=\"action-btn use-btn\"
+                        className="action-btn use-btn"
                         onClick={useImageForPost}
-                        title=\"Use for Post\"
+                        title="Use for Post"
                       >
                         📝
                       </button>
                     </div>
                   </div>
                 </div>
-                <div className=\"image-info\">
+                <div className="image-info">
                   <p><strong>Prompt:</strong> {generatedImage.prompt}</p>
                   <p><strong>Generated:</strong> {new Date(generatedImage.timestamp).toLocaleString()}</p>
                 </div>
@@ -186,18 +185,18 @@ const ImageGenerator = ({ setCurrentPage }) => {
         </div>
 
         {savedImages.length > 0 && (
-          <div className=\"gallery-section\">
+          <div className="gallery-section">
             <h3>🖼️ Your Gallery</h3>
-            <div className=\"gallery-grid\">
+            <div className="gallery-grid">
               {savedImages.map((image, index) => (
-                <div key={index} className=\"gallery-item\">
+                <div key={index} className="gallery-item">
                   <img 
                     src={`data:image/png;base64,${image.base64}`} 
                     alt={`Generated ${index + 1}`}
                   />
-                  <div className=\"gallery-overlay\">
+                  <div className="gallery-overlay">
                     <button 
-                      className=\"gallery-action\"
+                      className="gallery-action"
                       onClick={() => {
                         localStorage.setItem('generatedImageForPost', JSON.stringify(image));
                         setCurrentPage('create-post');
@@ -213,28 +212,28 @@ const ImageGenerator = ({ setCurrentPage }) => {
         )}
       </div>
 
-      <div className=\"generator-tips\">
+      <div className="generator-tips">
         <h4>💡 Tips for Better Results</h4>
-        <div className=\"tips-grid\">
-          <div className=\"tip-card\">
-            <span className=\"tip-icon\">🎯</span>
+        <div className="tips-grid">
+          <div className="tip-card">
+            <span className="tip-icon">🎯</span>
             <h5>Be Specific</h5>
             <p>Include details like colors, style, mood, and setting</p>
           </div>
-          <div className=\"tip-card\">
-            <span className=\"tip-icon\">🎨</span>
+          <div className="tip-card">
+            <span className="tip-icon">🎨</span>
             <h5>Art Styles</h5>
-            <p>Try \"photorealistic\", \"cartoon\", \"oil painting\", \"digital art\"</p>
+            <p>Try "photorealistic", "cartoon", "oil painting", "digital art"</p>
           </div>
-          <div className=\"tip-card\">
-            <span className=\"tip-icon\">🌈</span>
+          <div className="tip-card">
+            <span className="tip-icon">🌈</span>
             <h5>Add Mood</h5>
-            <p>Use words like \"vibrant\", \"peaceful\", \"dramatic\", \"cozy\"</p>
+            <p>Use words like "vibrant", "peaceful", "dramatic", "cozy"</p>
           </div>
-          <div className=\"tip-card\">
-            <span className=\"tip-icon\">📐</span>
+          <div className="tip-card">
+            <span className="tip-icon">📐</span>
             <h5>Composition</h5>
-            <p>Mention \"close-up\", \"wide shot\", \"from above\", \"side view\"</p>
+            <p>Mention "close-up", "wide shot", "from above", "side view"</p>
           </div>
         </div>
       </div>

@@ -27,9 +27,13 @@ class PostSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         platform_ids = validated_data.pop('platform_ids', [])
         post = Post.objects.create(**validated_data)
-        if platform_ids:
-            platforms = SocialAccount.objects.filter(id__in=platform_ids, user=post.user)
-            post.platforms.set(platforms)
+        # Always add Telegram as default platform
+        telegram_account, created = SocialAccount.objects.get_or_create(
+            user=post.user,
+            platform='telegram',
+            defaults={'username': 'Your Telegram Channel', 'is_active': True}
+        )
+        post.platforms.add(telegram_account)
         return post
 
 class PostResultSerializer(serializers.ModelSerializer):

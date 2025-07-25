@@ -43,7 +43,7 @@ const PostsList = ({ refreshTrigger, setCurrentPage }) => {
   const publishPost = async (post, credentials) => {
     setPublishingPost(post.id);
     try {
-      const response = await postsAPI.publish(post.id, credentials);
+      await postsAPI.publish(post.id, credentials);
       toast.success('Post published successfully!');
       fetchPosts(); // Refresh to get updated status
     } catch (error) {
