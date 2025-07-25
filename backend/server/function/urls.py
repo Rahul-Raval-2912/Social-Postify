@@ -10,4 +10,5 @@ urlpatterns = [
     path('api/', include(router.urls)),
     path('api/auth/register/', views.create_user, name='register'),
     path('api/auth/login/', views.login_user, name='login'),
+    path('api/auth/logout/', views.logout_user, name='logout'),
 ]

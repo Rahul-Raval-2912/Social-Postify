@@ -8,7 +8,7 @@ import CreatePost from './components/Posts/CreatePost';
 import ImageGenerator from './components/ImageGenerator/ImageGenerator';
 import SchedulePost from './components/Posts/SchedulePost';
 import PostsList from './components/Posts/PostsList';
-import SocialAccounts from './components/Accounts/SocialAccounts';
+import { authAPI } from './services/api';
 import './App.css';
 
 function App() {
@@ -22,9 +22,16 @@ function App() {
     setCurrentPage('dashboard');
   };
 
-  const handleLogout = () => {
-    setUser(null);
-    setCurrentPage('dashboard');
+  const handleLogout = async () => {
+    try {
+      await authAPI.logout();
+      setUser(null);
+      setCurrentPage('dashboard');
+    } catch (error) {
+      // Even if logout fails, clear local state
+      setUser(null);
+      setCurrentPage('dashboard');
+    }
   };
 
   const handlePostCreated = () => {
