@@ -1,0 +1,153 @@
+/* White Theme */
+[data-theme="white"] {
+  --background: 255 255 255;
+  --foreground: 0 0 0;
+  --card: 255 255 255;
+  --card-foreground: 0 0 0;
+  --primary: 139 92 246;
+  --primary-foreground: 255 255 255;
+  --secondary: 243 244 246;
+  --secondary-foreground: 17 24 39;
+  --muted-foreground: 107 114 128;
+  --border: 229 231 235;
+}
+
+[data-theme="white"] body {
+  background: #ffffff !important;
+  color: #000000 !important;
+}
+
+[data-theme="white"] .glass-card {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+[data-theme="white"] .glass-surface {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+[data-theme="white"] .btn-gradient,
+[data-theme="white"] .bg-gradient-to-r {
+  background: linear-gradient(to right, #ec4899, #f97316) !important;
+}
+
+[data-theme="white"] .gradient-primary {
+  background: linear-gradient(to right, #ec4899, #f97316) !important;
+}
+
+/* All text black in white theme */
+[data-theme="white"] * {
+  color: #000000 !important;
+}
+
+[data-theme="white"] h1,
+[data-theme="white"] h2,
+[data-theme="white"] h3,
+[data-theme="white"] h4,
+[data-theme="white"] h5,
+[data-theme="white"] h6,
+[data-theme="white"] p,
+[data-theme="white"] span,
+[data-theme="white"] div,
+[data-theme="white"] label,
+[data-theme="white"] button {
+  color: #000000 !important;
+}
+
+[data-theme="white"] .text-white {
+  color: #000000 !important;
+}
+
+[data-theme="white"] .text-muted-foreground {
+  color: #6b7280 !important;
+}
+
+/* Remove ALL yellow colors and use light grey/white */
+[data-theme="white"] .bg-yellow-50,
+[data-theme="white"] .bg-yellow-100,
+[data-theme="white"] .bg-yellow-200,
+[data-theme="white"] .bg-yellow-300,
+[data-theme="white"] .bg-yellow-400,
+[data-theme="white"] .bg-yellow-500,
+[data-theme="white"] .bg-yellow-600,
+[data-theme="white"] .bg-yellow-700,
+[data-theme="white"] .bg-yellow-800,
+[data-theme="white"] .bg-yellow-900,
+[data-theme="white"] .text-yellow-400,
+[data-theme="white"] .text-yellow-500,
+[data-theme="white"] .text-yellow-600,
+[data-theme="white"] .border-yellow-400,
+[data-theme="white"] .border-yellow-500 {
+  background-color: #ffffff !important;
+  color: #1f2937 !important;
+  border-color: #e5e7eb !important;
+}
+
+/* Any element with yellow background */
+[data-theme="white"] *[style*="background-color: #fbbf24"],
+[data-theme="white"] *[style*="backgroundColor: '#fbbf24'"],
+[data-theme="white"] *[style*="background: #fbbf24"] {
+  background-color: #ffffff !important;
+  color: #374151 !important;
+  border: 1px solid #d1d5db !important;
+}
+
+/* Coming soon banner */
+[data-theme="white"] .coming-soon-banner {
+  background-color: #ffffff !important;
+  color: #374151 !important;
+  border: 1px solid #d1d5db !important;
+}
+
+/* Remove any possible yellow backgrounds */
+[data-theme="white"] *[class*="yellow"],
+[data-theme="white"] *[class*="amber"],
+[data-theme="white"] .bg-amber-50,
+[data-theme="white"] .bg-amber-100,
+[data-theme="white"] .bg-amber-200,
+[data-theme="white"] .bg-amber-300,
+[data-theme="white"] .bg-amber-400,
+[data-theme="white"] .bg-amber-500 {
+  background-color: #ffffff !important;
+  color: #1f2937 !important;
+}
+
+/* Override any inline yellow styles */
+[data-theme="white"] *[style*="yellow"],
+[data-theme="white"] *[style*="#fbbf24"],
+[data-theme="white"] *[style*="#f59e0b"],
+[data-theme="white"] *[style*="#d97706"],
+[data-theme="white"] *[style*="#92400e"] {
+  background-color: #ffffff !important;
+  color: #374151 !important;
+}
+
+/* Input and form elements */
+[data-theme="white"] input,
+[data-theme="white"] textarea,
+[data-theme="white"] select {
+  background: #ffffff !important;
+  color: #000000 !important;
+  border: 1px solid #d1d5db !important;
+}
+
+/* Buttons with white theme */
+[data-theme="white"] button:not(.btn-gradient):not(.bg-gradient-to-r) {
+  color: #000000 !important;
+}
+
+[data-theme="white"] .text-primary {
+  color: #ec4899 !important;
+}
+
+/* Dark Theme */
+[data-theme="dark"] body {
+  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #1e3a8a 100%) !important;
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .glass-card {
+  background: rgba(0, 0, 0, 0.4) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
