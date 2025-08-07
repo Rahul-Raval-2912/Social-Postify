@@ -1,7 +1,22 @@
-from django.db import models
-from django.contrib.auth.models import User
+from mongoengine import Document, StringField, IntField, BooleanField, DateTimeField, ListField, ImageField, ReferenceField
+from datetime import datetime
+import hashlib
 
-class SocialAccount(models.Model):
+class User(Document):
+    username = StringField(max_length=100, required=True, unique=True)
+    email = StringField(max_length=100, required=True)
+    password_hash = StringField(required=True)
+    created_at = DateTimeField(default=datetime.utcnow)
+    
+    meta = {'collection': 'users'}
+    
+    def set_password(self, password):
+        self.password_hash = hashlib.sha256(password.encode()).hexdigest()
+    
+    def check_password(self, password):
+        return self.password_hash == hashlib.sha256(password.encode()).hexdigest()
+
+class SocialAccount(Document):
     PLATFORM_CHOICES = [
         ('telegram', 'Telegram'),
         ('instagram', 'Instagram'),
@@ -9,15 +24,17 @@ class SocialAccount(models.Model):
         ('whatsapp', 'WhatsApp'),
     ]
     
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    platform = models.CharField(max_length=20, choices=PLATFORM_CHOICES)
-    username = models.CharField(max_length=100, blank=True)
-    token = models.TextField(blank=True)
-    chat_id = models.CharField(max_length=100, blank=True)
-    is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    user = ReferenceField(User, required=True)
+    platform = StringField(max_length=20, choices=PLATFORM_CHOICES, required=True)
+    username = StringField(max_length=100)
+    token = StringField()
+    chat_id = StringField(max_length=100)
+    is_active = BooleanField(default=True)
+    created_at = DateTimeField(default=datetime.utcnow)
+    
+    meta = {'collection': 'social_accounts'}
 
-class Post(models.Model):
+class Post(Document):
     STATUS_CHOICES = [
         ('draft', 'Draft'),
         ('scheduled', 'Scheduled'),
@@ -25,20 +42,24 @@ class Post(models.Model):
         ('failed', 'Failed'),
     ]
     
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    title = models.CharField(max_length=200)
-    content = models.TextField()
-    image = models.ImageField(upload_to='posts/', blank=True, null=True)
-    generated_image_prompt = models.TextField(blank=True)
-    platforms = models.ManyToManyField(SocialAccount, blank=True)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft')
-    scheduled_time = models.DateTimeField(blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    posted_at = models.DateTimeField(blank=True, null=True)
+    user = ReferenceField(User, required=True)
+    title = StringField(max_length=200, required=True)
+    content = StringField(required=True)
+    image_path = StringField()
+    generated_image_prompt = StringField()
+    platforms = ListField(ReferenceField(SocialAccount))
+    status = StringField(max_length=20, choices=STATUS_CHOICES, default='draft')
+    scheduled_time = DateTimeField()
+    created_at = DateTimeField(default=datetime.utcnow)
+    posted_at = DateTimeField()
+    
+    meta = {'collection': 'posts'}
 
-class PostResult(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
-    platform = models.ForeignKey(SocialAccount, on_delete=models.CASCADE)
-    success = models.BooleanField(default=False)
-    error_message = models.TextField(blank=True)
-    posted_at = models.DateTimeField(auto_now_add=True)
+class PostResult(Document):
+    post = ReferenceField(Post, required=True)
+    platform = ReferenceField(SocialAccount, required=True)
+    success = BooleanField(default=False)
+    error_message = StringField()
+    posted_at = DateTimeField(default=datetime.utcnow)
+    
+    meta = {'collection': 'post_results'}

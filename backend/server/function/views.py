@@ -1,111 +1,281 @@
 import asyncio
 import os
 import base64
-from django.shortcuts import render
-from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login
+import uuid
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
 from rest_framework import viewsets, status
 from rest_framework.decorators import action, api_view
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
-from .models import Post, SocialAccount, PostResult
+from .models import Post, SocialAccount, PostResult, User
 from .serializers import PostSerializer, SocialAccountSerializer, PostResultSerializer
 from .services import ImageGenerator, PostingService
 from django.core.files.base import ContentFile
 
-class PostViewSet(viewsets.ModelViewSet):
-    serializer_class = PostSerializer
+# Simple in-memory session storage
+user_sessions = {}
+
+class PostViewSet(viewsets.ViewSet):
     parser_classes = (MultiPartParser, FormParser)
     
-    def get_queryset(self):
-        return Post.objects.filter(user=self.request.user if self.request.user.is_authenticated else None)
+    def list(self, request):
+        session_id = request.META.get('HTTP_AUTHORIZATION', '').replace('Bearer ', '')
+        user_id = user_sessions.get(session_id)
+        if not user_id:
+            return Response({'error': 'Not authenticated'}, status=status.HTTP_401_UNAUTHORIZED)
+        
+        try:
+            user = User.objects.get(id=user_id)
+            posts = Post.objects(user=user)
+            serializer = PostSerializer(posts, many=True)
+            return Response(serializer.data)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
     
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+    def create(self, request):
+        # Get token from Authorization header
+        auth_header = request.META.get('HTTP_AUTHORIZATION', '')
+        if not auth_header.startswith('Bearer '):
+            return Response({'error': 'No authorization header'}, status=status.HTTP_401_UNAUTHORIZED)
+        
+        session_id = auth_header.replace('Bearer ', '')
+        user_id = user_sessions.get(session_id)
+        
+        if not user_id:
+            return Response({'error': f'Invalid token: {session_id[:10]}...'}, status=status.HTTP_401_UNAUTHORIZED)
+        
+        try:
+            user = User.objects.get(id=user_id)
+            data = request.data.copy()
+            
+            # Handle image upload
+            image_path = ''
+            if 'image' in request.FILES:
+                image = request.FILES['image']
+                import os
+                from django.conf import settings
+                media_path = os.path.join(settings.MEDIA_ROOT, 'posts')
+                os.makedirs(media_path, exist_ok=True)
+                image_path = os.path.join(media_path, image.name)
+                with open(image_path, 'wb') as f:
+                    for chunk in image.chunks():
+                        f.write(chunk)
+                image_path = f'/media/posts/{image.name}'
+            
+            post = Post(
+                user=user,
+                title=data['title'],
+                content=data['content'],
+                image_path=image_path,
+                generated_image_prompt=data.get('generated_image_prompt', ''),
+                status=data.get('status', 'draft')
+            ).save()
+            
+            serializer = PostSerializer(post)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    def retrieve(self, request, pk=None):
+        session_id = request.META.get('HTTP_AUTHORIZATION', '').replace('Bearer ', '')
+        user_id = user_sessions.get(session_id)
+        if not user_id:
+            return Response({'error': 'Not authenticated'}, status=status.HTTP_401_UNAUTHORIZED)
+        
+        try:
+            user = User.objects.get(id=user_id)
+            post = Post.objects.get(id=pk, user=user)
+            serializer = PostSerializer(post)
+            return Response(serializer.data)
+        except (User.DoesNotExist, Post.DoesNotExist):
+            return Response({'error': 'Post not found'}, status=status.HTTP_404_NOT_FOUND)
+    
+    def destroy(self, request, pk=None):
+        session_id = request.META.get('HTTP_AUTHORIZATION', '').replace('Bearer ', '')
+        user_id = user_sessions.get(session_id)
+        if not user_id:
+            return Response({'error': 'Not authenticated'}, status=status.HTTP_401_UNAUTHORIZED)
+        
+        try:
+            user = User.objects.get(id=user_id)
+            post = Post.objects.get(id=pk, user=user)
+            post.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except (User.DoesNotExist, Post.DoesNotExist):
+            return Response({'error': 'Post not found'}, status=status.HTTP_404_NOT_FOUND)
     
     @action(detail=False, methods=['post'])
     def generate_image(self, request):
-        """Generate image from prompt"""
         prompt = request.data.get('prompt')
         if not prompt:
             return Response({'error': 'Prompt is required'}, status=status.HTTP_400_BAD_REQUEST)
         
         try:
             image_base64 = ImageGenerator.generate_image(prompt)
-            image_data = base64.b64decode(image_base64)
-            
-            # Save image temporarily
-            filename = f"generated_{request.user.id}_{len(prompt)[:10]}.png"
-            image_file = ContentFile(image_data, name=filename)
-            
             return Response({
                 'image_base64': image_base64,
-                'filename': filename
+                'filename': f'generated-{len(prompt)}.png'
             })
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
     @action(detail=True, methods=['post'])
     def publish(self, request, pk=None):
-        """Publish post to selected platforms"""
-        post = self.get_object()
-        credentials = request.data.get('credentials', {})
+        # Get token from Authorization header
+        auth_header = request.META.get('HTTP_AUTHORIZATION', '')
+        if not auth_header.startswith('Bearer '):
+            return Response({'error': 'No authorization header'}, status=status.HTTP_401_UNAUTHORIZED)
+        
+        session_id = auth_header.replace('Bearer ', '')
+        user_id = user_sessions.get(session_id)
+        
+        if not user_id:
+            return Response({'error': f'Invalid token: {session_id[:10]}...'}, status=status.HTTP_401_UNAUTHORIZED)
         
         try:
+            user = User.objects.get(id=user_id)
+            post = Post.objects.get(id=pk, user=user)
+            
+            # Handle form data
+            import json
+            publish_data = {
+                'platforms': json.loads(request.data.get('platforms', '{}')),
+                'credentials': json.loads(request.data.get('credentials', '{}'))
+            }
+            
             # Run async function in sync context
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            results = loop.run_until_complete(PostingService.publish_post(post.id, credentials))
-            loop.close()
+            results = asyncio.run(PostingService.publish_post(str(post.id), publish_data))
             
             return Response({'results': results})
+        except (User.DoesNotExist, Post.DoesNotExist):
+            return Response({'error': 'Post not found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
-    @action(detail=True, methods=['get'])
-    def results(self, request, pk=None):
-        """Get posting results for a post"""
-        post = self.get_object()
-        results = PostResult.objects.filter(post=post)
-        serializer = PostResultSerializer(results, many=True)
-        return Response(serializer.data)
 
-class SocialAccountViewSet(viewsets.ModelViewSet):
-    serializer_class = SocialAccountSerializer
+class SocialAccountViewSet(viewsets.ViewSet):
     
-    def get_queryset(self):
-        return SocialAccount.objects.filter(user=self.request.user if self.request.user.is_authenticated else None)
-    
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+    def list(self, request):
+        session_id = request.META.get('HTTP_AUTHORIZATION', '').replace('Bearer ', '')
+        user_id = user_sessions.get(session_id)
+        if not user_id:
+            return Response({'error': 'Not authenticated'}, status=status.HTTP_401_UNAUTHORIZED)
+        
+        try:
+            user = User.objects.get(id=user_id)
+            accounts = SocialAccount.objects(user=user)
+            serializer = SocialAccountSerializer(accounts, many=True)
+            return Response(serializer.data)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
-@api_view(['POST'])
 @csrf_exempt
+@api_view(['POST'])
 def create_user(request):
-    """Create new user"""
     username = request.data.get('username')
     password = request.data.get('password')
     email = request.data.get('email')
     
-    if User.objects.filter(username=username).exists():
+    if User.objects(username=username).first():
         return Response({'error': 'Username already exists'}, status=status.HTTP_400_BAD_REQUEST)
     
-    user = User.objects.create_user(username=username, password=password, email=email)
-    return Response({'message': 'User created successfully', 'user_id': user.id})
+    user = User(username=username, email=email)
+    user.set_password(password)
+    user.save()
+    
+    return Response({'message': 'User created successfully', 'user_id': str(user.id)})
 
-@api_view(['POST'])
 @csrf_exempt
+@api_view(['POST'])
 def login_user(request):
-    """Login user"""
     username = request.data.get('username')
     password = request.data.get('password')
     
-    user = authenticate(username=username, password=password)
-    if user:
-        login(request, user)
-        return Response({'message': 'Login successful', 'user_id': user.id})
+    user = User.objects(username=username).first()
+    if user and user.check_password(password):
+        session_id = str(uuid.uuid4())
+        user_sessions[session_id] = str(user.id)
+        return Response({
+            'message': 'Login successful', 
+            'user_id': str(user.id),
+            'username': user.username,
+            'token': session_id
+        })
     else:
         return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+
+@csrf_exempt
+@api_view(['POST'])
+def logout_user(request):
+    session_id = request.META.get('HTTP_AUTHORIZATION', '').replace('Bearer ', '')
+    if session_id in user_sessions:
+        del user_sessions[session_id]
+    return Response({'message': 'Logged out successfully'})
+
+@csrf_exempt
+@api_view(['GET', 'PUT'])
+def user_profile(request):
+    auth_header = request.META.get('HTTP_AUTHORIZATION', '')
+    if not auth_header.startswith('Bearer '):
+        return Response({'error': 'Not authenticated'}, status=status.HTTP_401_UNAUTHORIZED)
+    
+    session_id = auth_header.replace('Bearer ', '')
+    user_id = user_sessions.get(session_id)
+    
+    if not user_id:
+        return Response({'error': 'Invalid token'}, status=status.HTTP_401_UNAUTHORIZED)
+    
+    try:
+        user = User.objects.get(id=user_id)
+        
+        if request.method == 'GET':
+            return Response({
+                'username': user.username,
+                'email': user.email,
+                'id': str(user.id)
+            })
+        
+        elif request.method == 'PUT':
+            user.username = request.data.get('username', user.username)
+            user.email = request.data.get('email', user.email)
+            user.save()
+            
+            return Response({
+                'message': 'Profile updated successfully',
+                'username': user.username,
+                'email': user.email
+            })
+    
+    except User.DoesNotExist:
+        return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+@csrf_exempt
+@api_view(['POST'])
+def change_password(request):
+    auth_header = request.META.get('HTTP_AUTHORIZATION', '')
+    if not auth_header.startswith('Bearer '):
+        return Response({'error': 'Not authenticated'}, status=status.HTTP_401_UNAUTHORIZED)
+    
+    session_id = auth_header.replace('Bearer ', '')
+    user_id = user_sessions.get(session_id)
+    
+    if not user_id:
+        return Response({'error': 'Invalid token'}, status=status.HTTP_401_UNAUTHORIZED)
+    
+    try:
+        user = User.objects.get(id=user_id)
+        current_password = request.data.get('currentPassword')
+        new_password = request.data.get('newPassword')
+        
+        if not user.check_password(current_password):
+            return Response({'error': 'Current password is incorrect'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        user.set_password(new_password)
+        user.save()
+        
+        return Response({'message': 'Password changed successfully'})
+    
+    except User.DoesNotExist:
+        return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)

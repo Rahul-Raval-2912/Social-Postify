@@ -35,3 +35,5 @@ mongodb/
 # OS
 .DS_Store
 Thumbs.db
+
+postify-glow-main
